@@ -1,10 +1,12 @@
 # keyword_analysis.py
-
 import pandas as pd
 import re
+import sys, os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from collections import Counter
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+
 
 def clean_text(text):
     text = re.sub(r"http\S+|www\S+", "", text)  # URLs
@@ -12,9 +14,9 @@ def clean_text(text):
     text = re.sub(r"\d+", "", text)             # Números
     return text.lower()
 
-def analizar_palabras_frecuentes(file="tracker.csv", top_n=30):
+def analizar_palabras_frecuentes(file="data/tracker.csv", top_n=30):
     df = pd.read_csv(file)
-    all_text = " ".join(df["subject"].fillna("") + " " + df["snippet"].fillna(""))
+    all_text = " ".join(df["subject"].fillna(""))
     clean = clean_text(all_text)
 
     tokens = word_tokenize(clean)
