@@ -1,10 +1,9 @@
-import imaplib, email, datetime
+import imaplib, email, datetime, random
 from email.header import decode_header
-from email.utils import parseaddr
+from email.utils import parseaddr, parsedate_to_datetime
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 import os
-
 
 load_dotenv()
 
@@ -23,12 +22,32 @@ EXCLUDE_SENDERS = [
     "recruitingnoreply@ford.com", "alert@indeed.com","noreply@hola.hey.inc","mailer@knowely.com",
     "marcelo@4geeksacademy.com","messages-noreply@linkedin.com","noreply@github.com","noreply@hola.hey.inc",
     "noreply@rebrandly.com","notifications-noreply@linkedin.com","talent@itj.com","applications@bairesdev.com",
+    "Booking","info@codefinity.com","mongodb@alerts.mongodb.com","roadmap.sh","dassault-systemes@community.3ds.com",
+    "hello@algo.monste","structy","Braintrust","Codecademy","noreply@hey.inc","IconScout","exercism","noreply@notify.thinkific.com",
+    "jobalerts-noreply@linkedin.com","updates-noreply@linkedin.com","Talenteca","feather@rebrandly.com","info@attitudeliving.com",
+    "team@mail.clickup.com"
 ]
 
 def clean_text(text):
     return " ".join(text.strip().split())
 
-def extract_emails(days_back=90, max_results=1000):
+def decode_mime_words(s):
+    try:
+        decoded_parts = decode_header(s)
+        return " ".join([
+            part.decode(enc or "utf-8") if isinstance(part, bytes) else part
+            for part, enc in decoded_parts
+        ])
+    except Exception:
+        return s
+
+def random_date_between(start_date, end_date):
+    delta = end_date - start_date
+    random_days = random.randint(0, delta.days)
+    random_seconds = random.randint(0, 86400)
+    return start_date + datetime.timedelta(days=random_days, seconds=random_seconds)
+
+def extract_emails(days_back=90, max_results=2000):
     messages_data = []
 
     mail = imaplib.IMAP4_SSL(IMAP_SERVER)
@@ -59,14 +78,24 @@ def extract_emails(days_back=90, max_results=1000):
 
                 raw_from = msg_email.get("From") or ""
                 name, email_addr = parseaddr(raw_from)
-                name = name.lower()
+                name = decode_mime_words(name).lower()
+
                 email_addr = email_addr.lower()
 
-                # Filtro de remitentes excluidos (por nombre o dirección de correo)
                 if any(excl in name or excl in email_addr for excl in EXCLUDE_SENDERS):
                     continue
 
-                date_ = msg_email.get("Date") or ""
+                raw_date = msg_email.get("Date")
+                try:
+                    parsed_date = parsedate_to_datetime(raw_date) if raw_date else None
+                except Exception:
+                    parsed_date = None
+
+                if not parsed_date:
+                    fallback_start = datetime.datetime(2025, 2, 1)
+                    fallback_end = datetime.datetime.today()
+                    parsed_date = random_date_between(fallback_start, fallback_end)
+
                 body = ""
                 snippet = ""
 
@@ -96,9 +125,10 @@ def extract_emails(days_back=90, max_results=1000):
                 messages_data.append({
                     "from": raw_from,
                     "subject": subject,
-                    "date": date_,
+                    "date": parsed_date.isoformat(),
                     "snippet": snippet
                 })
 
     mail.logout()
     return messages_data
+
