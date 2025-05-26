@@ -12,7 +12,7 @@ st.markdown("Este panel muestra un resumen de correos relacionados con tus postu
 def load_data(file):
     df = pd.read_csv(file)
     df["date"] = pd.to_datetime(df["date"], errors="coerce")
-    df["date"] = df["date"].dt.tz_localize(None)  # 🔧 Eliminar zona horaria
+    df["date"] = df["date"].dt.tz_localize(None)
     return df
 
 try:

@@ -1,9 +1,11 @@
 # Entornos y configuraciones
+.venv/
 .env
 *.env
 
 # Cachés y archivos temporales
 __pycache__/
+*.pyc
 *.py[cod]
 *.pyo
 *.log

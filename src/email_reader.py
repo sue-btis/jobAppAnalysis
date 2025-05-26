@@ -20,7 +20,9 @@ EXCLUDE_SENDERS = [
     "alerta de empleo", "we thought this job", "new job opportunities", "glassdoor",
     "crew@hyperskill.org", "epam", "donotreply@match.indeed.com", "support@jobgether.com",
     "ota@career.oracle.com", "noreply@glassdoor.com", "consubanco",
-    "recruitingnoreply@ford.com", "alert@indeed.com"
+    "recruitingnoreply@ford.com", "alert@indeed.com","noreply@hola.hey.inc","mailer@knowely.com",
+    "marcelo@4geeksacademy.com","messages-noreply@linkedin.com","noreply@github.com","noreply@hola.hey.inc",
+    "noreply@rebrandly.com","notifications-noreply@linkedin.com","talent@itj.com","applications@bairesdev.com",
 ]
 
 def clean_text(text):
@@ -60,7 +62,7 @@ def extract_emails(days_back=90, max_results=1000):
                 name = name.lower()
                 email_addr = email_addr.lower()
 
-                # ✅ Filtro de remitentes excluidos (por nombre o dirección de correo)
+                # Filtro de remitentes excluidos (por nombre o dirección de correo)
                 if any(excl in name or excl in email_addr for excl in EXCLUDE_SENDERS):
                     continue
 
