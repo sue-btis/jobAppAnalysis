@@ -1,6 +1,22 @@
+# Entornos y configuraciones
 .env
+*.env
+
+# Cachés y archivos temporales
 __pycache__/
-*.pyc
+*.py[cod]
+*.pyo
+*.log
+
+# Archivos de sistema
 .DS_Store
+Thumbs.db
+
+# Datos sensibles del proyecto
 data/
+*.csv
+*.xlsx
+
+# Configuración local
+.vscode/
 
